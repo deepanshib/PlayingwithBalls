@@ -50,11 +50,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        /*
-         * when the activity is resumed, we acquire a wake-lock so that the
-         * screen stays on, since the user will likely not be fiddling with the
-         * screen or buttons.
-         */
         mWakeLock.acquire();
         mSimulationView.startSimulation();
     }
@@ -125,8 +120,8 @@ public class MainActivity extends Activity {
 
             public void computePhysics(float sx, float sy, float dT) {
 
-                final float ax = -sx/5;
-                final float ay = -sy/5;
+                final float ax = -sx/10;
+                final float ay = -sy/10;
 
                 mPosX += mVelX * dT + ax * dT * dT / 2;
                 mPosY += mVelY * dT + ay * dT * dT / 2;
@@ -134,13 +129,6 @@ public class MainActivity extends Activity {
                 mVelX += ax * dT;
                 mVelY += ay * dT;
             }
-
-            /*
-             * Resolving constraints and collisions with the Verlet integrator
-             * can be very simple, we simply need to move a colliding or
-             * constrained particle in such way that the constraint is
-             * satisfied.
-             */
             public void resolveCollisionWithBounds() {
                 final float xmax = mHorizontalBound;
                 final float ymax = mVerticalBound;
@@ -163,17 +151,11 @@ public class MainActivity extends Activity {
             }
         }
 
-        /*
-         * A particle system is just a collection of particles
-         */
         class ParticleSystem {
             static final int NUM_PARTICLES = 5;
             private Particle mBalls[] = new Particle[NUM_PARTICLES];
 
             ParticleSystem() {
-                /*
-                 * Initially our particles have no speed or acceleration
-                 */
                 for (int i = 0; i < mBalls.length; i++) {
                     mBalls[i] = new Particle(getContext());
                     mBalls[i].setBackgroundResource(R.drawable.ball);
@@ -181,7 +163,6 @@ public class MainActivity extends Activity {
                     addView(mBalls[i], new ViewGroup.LayoutParams(mDstWidth, mDstHeight));
                 }
             }
-
             /*
              * Update the position of each particle in the system using the
              * Verlet integrator.
@@ -268,13 +249,6 @@ public class MainActivity extends Activity {
         }
 
         public void startSimulation() {
-            /*
-             * It is not necessary to get accelerometer events at a very high
-             * rate, by using a slower rate (SENSOR_DELAY_UI), we get an
-             * automatic low-pass filter, which "extracts" the gravity component
-             * of the acceleration. As an added benefit, we use less power and
-             * CPU resources.
-             */
             mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         }
 
